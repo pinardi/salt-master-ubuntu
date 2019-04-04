@@ -298,10 +298,6 @@
 # The external auth system uses the Salt auth modules to authenticate and
 # validate users to access areas of the Salt system.
 #external_auth:
-#ldap:
-# - 'saltdev':
-#   - test.*
-
 #  pam:
 #    fred:
 #      - test.*
@@ -360,7 +356,7 @@
 # The state system uses a "top" file to tell the minions what environment to
 # use and what modules to use. The state_top file is defined relative to the
 # root of the base environment as defined in "File Server settings" below.
-state_top: top.sls
+#state_top: top.sls
 
 # The master_tops option replaces the external_nodes option by creating
 # a plugable system for the generation of external top data. The external_nodes
@@ -440,21 +436,16 @@ state_top: top.sls
 file_roots:
    base:
      - /srv/salt/
-#   dev:
-#     - /srv/saltt/dev
-#   qa:
-#     - /srv/salt/qa
-#   'web*':
-#     - mysql.client
-#     - mysql.python
-#   'db*':
-#     - mysql.server
+   dev:
+      - /srv/salt/dev
+   qa:
+      - /sssrv/salt/qa
+	
 #     - /srv/salt/dev/services
 #     - /srv/salt/dev/states
 #   prod:
 #     - /srv/salt/prod/services
 #     - /srv/salt/prod/states
-#
 #file_roots:
 #  base:
 #    - /srv/salt
@@ -504,7 +495,7 @@ file_roots:
 # path before syncing the modules and states to the minions. This is similar
 # to file_ignore_regex above, but works on globs instead of regex. By default
 # nothing is ignored.
-file_ignore_glob: []
+# file_ignore_glob:
 #  - '*.pyc'
 #  - '*/somefolder/*.bak'
 #  - '*.swp'
@@ -589,9 +580,10 @@ file_ignore_glob: []
 # a top file and sls files. However, pillar data does not need to be in the
 # highstate format, and is generally just key/value pairs.
 
-#pillar_roots:
-#  base:
-#    - /srv/pillar
+pillar_roots:
+  base:
+    - /srv/pillar
+
 
 #ext_pillar:
 #  - hiera: /etc/hiera.yaml
