@@ -30,7 +30,7 @@ systemctl enable salt-master.service
 # edit
 ## salt master
 ```bash
-nano /etc/salt/master
+nano /etc/salt/minion
 master: "ip of salt master"
 ```
 # restart
