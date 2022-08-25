@@ -1,0 +1,80 @@
+192.168.201.128
+
+Configure Salt Minions
+Install the package salt-minion on all salt minions after importing repository key and adding the repo:
+
+sudo apt install salt-minion
+By default a Salt Minion will try to connect to the DNS name “salt“; if the Minion is able to resolve that name correctly, no configuration is needed.
+
+
+Set DNS name of the Salt Master on /etc/hosts:
+192.168.201.128 salt
+
+Set Minion ID on /etc/salt/minion_id:
+
+oibit
+
+Print the master key fingerprint by running the following command on the Salt master:
+
+[root@master ~]# salt-key -F master
+Local Keys:
+master.pem:  74:85:d0:bd:09:86:7e:7c:5c:b9:36:1e:8c:28:58:cc:26:e8:e7:ae:8c:c6:1a:2c:34:b4:68:52:da:85:5f:6c
+master.pub:  15:f7:d4:cc:c2:8b:ef:1f:4e:ba:c2:85:75:33:48:eb:a6:3e:48:00:58:b7:3c:7d:98:ca:76:33:85:15:ed:b2
+Copy the master.pub fingerprint from the Local Keys section, and then set this value as the master_finger in the minion configuration file.
+
+master_finger: '15:f7:d4:cc:c2:8b:ef:1f:4e:ba:c2:85:75:33:48:eb:a6:3e:48:00:58:b7:3c:7d:98:ca:76:33:85:15:ed:b2'
+If you make any change like setting IP address of the master on /etc/salt/minion, you’ll need to restart salt-minion service:
+
+sudo systemctl restart salt-minion
+Login to the master node and check Accepted Keys:
+
+[root@master ~]# salt-key -L
+Accepted Keys:
+Denied Keys:
+Unaccepted Keys:
+ubuntu-01
+Rejected Keys:
+Accept the Key on the Master
+
+[root@master ~]# salt-key --accept='oibit'
+The following keys are going to be accepted:
+Unaccepted Keys:
+oibit
+Proceed? [n/Y] Y 
+Key for minion oibit accepted.
+
+[root@master ~]# salt-key -L
+Accepted Keys:
+oibit
+Denied Keys:
+Unaccepted Keys:
+Rejected Keys:
+From the output, you can confirm that the key has been added to the Accepted keys list.
+
+You can also accept for all of the Minion servers by using the option -A:
+
+[root@master ~]# salt-key -A
+Check Minion Key Fingerprint
+Run the following command on each Salt minion to view the minion key fingerprint:
+
+# salt-call --local key.finger
+Sample output
+
+[root@oibit ~]# salt-call --local key.finger
+local:
+    45:b8:14:28:73:c5:fd:9f:af:21:f6:21:8e:06:3d:e6:b9:12:83:41:8a:78:3f:db:1e:19:85:d0:1d:71:be:02
+Compare this value to the value that is displayed when you run the salt-key –finger <MINION_ID> command on the Salt master.
+
+[root@master ~]# salt-key --finger ubuntu-01
+Accepted Keys:
+ubuntu-01:  45:b8:14:28:73:c5:fd:9f:af:21:f6:21:8e:06:3d:e6:b9:12:83:41:8a:78:3f:db:1e:19
+Test Master Minion Communication
+Verify the communication between the Master and a Minion by running the test.ping command:
+
+[root@master ~]# salt ubuntu-01 test.ping
+ubuntu-01:
+    True
+salt saltstack ping test min
+To test the communication between Salt Master and all Minions use:
+
+[root@master ~]# salt '*' test.ping
